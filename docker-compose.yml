@@ -9,12 +9,12 @@ services:
       - "42891:42891"
     environment:
       - NODE_ENV=production
-    deploy:
-      replicas: 2
-      resources:
-        limits:
-          cpus: '0.5'
-          memory: 512M
-        reservations:
-          cpus: '0.25'
-          memory: 256M 
+    #deploy:
+    #  replicas: 2
+    #  resources:
+    #    limits:
+    #      cpus: '0.5'
+    #      memory: 512M
+    #    reservations:
+    #      cpus: '0.25'
+    #      memory: 256M 
