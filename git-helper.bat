@@ -3,14 +3,13 @@ cd /d %~dp0
 chcp 65001 >nul
 cls
 
-echo Git Helper v1.0.1
-echo.
+setlocal enabledelayedexpansion
 
 color 0A
 title Git Helper Menu
 
 echo ========================================
-echo            Git Helper Menu
+echo            Git Helper Menu v1.1.18
 echo ========================================
 echo.
 echo  [1] Init and First Push
@@ -77,20 +76,25 @@ if "%choice%"=="1" (
     git config --global http.sslVerify false
 
     echo ===== 获取最新更改 =====
-    git fetch origin main
+    echo 正在从远程仓库获取更新...
+    call :progress 100 0
+    git fetch origin main >nul
     if %errorlevel% neq 0 (
         echo [失败] 获取更新失败
         pause
         exit /b %errorlevel%
     )
+    call :progress 100 30
 
     echo ===== 合并远程更改 =====
+    echo 正在合并更新...
     git pull origin main
     if %errorlevel% neq 0 (
         echo [失败] 合并更新失败
         pause
         exit /b %errorlevel%
     )
+    call :progress 100 60
 
     echo ===== 显示当前状态 =====
     git status
@@ -118,6 +122,7 @@ if "%choice%"=="1" (
 
     echo ===== 推送更改 =====
     echo 正在推送...请稍候...
+    call :progress 100 80
     git push origin main
     if %errorlevel% neq 0 (
         echo [失败] 推送失败，正在重试...
@@ -130,6 +135,7 @@ if "%choice%"=="1" (
             exit /b %errorlevel%
         )
     )
+    call :progress 100 100
 ) else (
     echo [错误] 无效的选择
     pause
