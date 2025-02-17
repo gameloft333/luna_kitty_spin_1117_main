@@ -35,7 +35,7 @@ git reset --hard origin/main
 
 # Rebuild and start services
 echo -e "${YELLOW}Rebuilding and starting services...${NC}"
-docker-compose up -f docker-compose-250217.yml -d --build
+docker-compose -f docker-compose-250217.yml up -d --build
 
 # Wait for service startup
 echo -e "${YELLOW}Waiting for service startup...${NC}"
@@ -47,7 +47,7 @@ sleep 5
 
 # Check service status
 echo -e "${YELLOW}Checking service status...${NC}"
-docker-compose ps
+docker-compose -f docker-compose-250217.yml ps
 curl -I http://localhost:42891
 
 echo -e "${GREEN}===== Deployment completed =====${NC}"
