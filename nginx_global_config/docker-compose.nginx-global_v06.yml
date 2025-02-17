@@ -1,0 +1,109 @@
+# version: '3.8'
+
+services:
+  nginx:
+    image: nginx:latest
+    container_name: saga4v-nginx
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      # Nginx Configuration
+      - ./nginx.global.250128.conf:/etc/nginx/nginx.conf:ro
+      # - /etc/nginx/conf.d:/etc/nginx/conf.d:ro
+      
+      # SSL Certificates - love.saga4v.com
+      - /etc/letsencrypt/live/love.saga4v.com/fullchain.pem:/etc/nginx/ssl/love.saga4v.com/fullchain.pem:ro
+      - /etc/letsencrypt/live/love.saga4v.com/privkey.pem:/etc/nginx/ssl/love.saga4v.com/privkey.pem:ro
+           
+      # SSL Certificates - play.saga4v.com
+      - /etc/letsencrypt/live/play.saga4v.com/fullchain.pem:/etc/nginx/ssl/play.saga4v.com/fullchain.pem:ro
+      - /etc/letsencrypt/live/play.saga4v.com/privkey.pem:/etc/nginx/ssl/play.saga4v.com/privkey.pem:ro
+      
+      # SSL Certificates - payment.saga4v.com
+      - /etc/letsencrypt/live/payment.saga4v.com/fullchain.pem:/etc/nginx/ssl/payment.saga4v.com/fullchain.pem:ro
+      - /etc/letsencrypt/live/payment.saga4v.com/privkey.pem:/etc/nginx/ssl/payment.saga4v.com/privkey.pem:ro
+
+      # SSL Certificates - kitty.saga4v.com
+      - /etc/letsencrypt/live/kitty.saga4v.com/fullchain.pem:/etc/nginx/ssl/kitty.saga4v.com/fullchain.pem:ro
+      - /etc/letsencrypt/live/kitty.saga4v.com/privkey.pem:/etc/nginx/ssl/kitty.saga4v.com/privkey.pem:ro
+
+      # Add a default.conf if not present
+      - /etc/nginx/conf.d/default.conf:/etc/nginx/conf.d/default.conf:ro
+
+      # Certbot challenge directory
+      - /var/www/certbot:/var/www/certbot:ro
+      
+      # 添加日志目录映射
+      - ./logs:/var/log/nginx
+
+    networks:
+      - saga4v_network
+    
+    restart: unless-stopped
+
+    # Optional: Health check
+    healthcheck:
+      test: ["CMD", "nginx", "-t"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 15s
+
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+
+  # Love Project - Replace IP and Port with your actual deployment details
+  # love_app:
+    # REPLACE: Use your actual container image or build configuration
+    # image: ai-chat-application-1113-main-frontend-1:latest
+  #  build: 
+  #    context: .  # Current project directory
+  #    dockerfile: ai-chat-application-1113-main/Dockerfile
+  #    args: # Add additional build arguments or files if needed
+  #      - ENV_FILE=ai-chat-application-1113-main/.env.production
+  #  container_name: ai-chat-application-1113-main-frontend-1
+  #  networks:
+  #   - saga4v_network
+    
+    # REPLACE: Set your actual internal IP and port
+  #  ports:
+  #    - "4173:4173" # Changed from the incorrect format
+    
+  #  restart: unless-stopped
+
+  # Placeholder for other projects - You can uncomment and modify as needed
+  # play_app:
+  #   image: play-app-image:latest
+  #   container_name: play-app
+  #   networks:
+  #     - saga4v_network
+  #   ports:
+  #     - "127.0.0.1:XXXX:XXXX"
+  #   restart: unless-stopped
+
+  # kitty_app:
+  #   image: kitty-app-image:latest
+  #   container_name: kitty-app
+  #   networks:
+  #     - saga4v_network
+  #   ports:
+  #     - "127.0.0.1:YYYY:YYYY"
+  #   restart: unless-stopped
+
+  # chat_app:
+  #   image: chat-app-image:latest
+  #   container_name: chat-app
+  #   networks:
+  #     - saga4v_network
+  #   ports:
+  #     - "127.0.0.1:ZZZZ:ZZZZ"
+  #   restart: unless-stopped
+
+networks:
+  saga4v_network:
+    external: true
+    name: saga4v_network

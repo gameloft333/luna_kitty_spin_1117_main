@@ -1,0 +1,46 @@
+version: '3.8'
+
+services:
+  luna-kitty-spin:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: luna-kitty-spin-main-1
+    restart: unless-stopped
+    env_file:
+      - .env.production
+    environment:
+      - VITE_API_URL=https://kitty.saga4v.com/api
+      - VITE_SOCKET_URL=wss://kitty.saga4v.com/socket
+      - CORS_ORIGIN=https://kitty.saga4v.com
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:42891/ || exit 0"]
+      interval: 60s
+      timeout: 30s
+      retries: 3
+      start_period: 180s
+    networks:
+      - saga4v_network
+    volumes:
+      - /etc/letsencrypt/live/kitty.saga4v.com/fullchain.pem:/etc/ssl/certs/kitty.saga4v.com/fullchain.pem:ro
+      - /etc/letsencrypt/live/kitty.saga4v.com/privkey.pem:/etc/ssl/certs/kitty.saga4v.com/privkey.pem:ro
+    ports:
+      - "42891:42891"
+    deploy:
+      resources:
+        limits:
+          cpus: '1'
+          memory: 1G
+        reservations:
+          cpus: '0.5'
+          memory: 512M
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+
+networks:
+  saga4v_network:
+    external: true
+    name: saga4v_network

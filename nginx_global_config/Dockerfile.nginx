@@ -1,0 +1,21 @@
+FROM nginx:latest
+
+# Install curl and debugging tools
+RUN apt-get update && apt-get install -y curl vim && rm -rf /var/lib/apt/lists/*
+
+# Create backup directory
+RUN mkdir -p /etc/nginx/conf_backups
+
+# Backup existing nginx.conf with timestamp in a dedicated backup folder
+RUN if [ -f /etc/nginx/nginx.conf ]; then \
+    cp /etc/nginx/nginx.conf /etc/nginx/conf_backups/nginx.conf.$(date +"%Y%m%d_%H%M%S").backup; \
+    fi
+
+# Copy custom Nginx configuration
+COPY nginx.global.250128.conf /etc/nginx/nginx.conf
+
+# Validate Nginx configuration and output detailed error information
+RUN nginx -t || (echo "Nginx configuration test failed. Showing configuration:" && \
+    cat /etc/nginx/nginx.conf && \
+    nginx -T && \
+    exit 1)

@@ -17,7 +17,7 @@ echo -e "${GREEN}===== Starting deployment: $PROJECT_NAME =====${NC}"
 # Stop and clean current services
 echo -e "${YELLOW}Stopping current services...${NC}"
 cd $PROJECT_PATH
-docker-compose down
+docker-compose -f docker-compose-250217.yml down
 docker system prune -f
 
 # Check port usage
@@ -35,15 +35,15 @@ git reset --hard origin/main
 
 # Rebuild and start services
 echo -e "${YELLOW}Rebuilding and starting services...${NC}"
-docker-compose up -d --build
+docker-compose up -f docker-compose-250217.yml -d --build
 
 # Wait for service startup
 echo -e "${YELLOW}Waiting for service startup...${NC}"
 sleep 5
 
 # Restart Nginx
-echo -e "${YELLOW}Restarting Nginx service...${NC}"
-sudo systemctl restart nginx
+# echo -e "${YELLOW}Restarting Nginx service...${NC}"
+# sudo systemctl restart nginx
 
 # Check service status
 echo -e "${YELLOW}Checking service status...${NC}"
